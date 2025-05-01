@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Job Tracker",
+  "version": "1.0",
+  "description": "Track your job applications directly in your new tab.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  }
+}
