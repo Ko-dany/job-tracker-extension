@@ -1,48 +1,40 @@
-import { useState } from "react";
-import { db, addDoc, collection } from "./firebase";
+import { useEffect, useState } from "react";
+import { GoogleLoginButton } from "./components/GoogleLoginButton";
+import { ApplicationForm } from "./components/ApplicationForm";
+import {
+  browserLocalPersistence,
+  onAuthStateChanged,
+  setPersistence,
+  User,
+} from "firebase/auth";
+import { auth } from "./firebase";
 
 function App() {
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-
-    setLoading(true);
-    try {
-      await addDoc(collection(db, "names"), {
-        name,
-        timestamp: new Date(),
+  useEffect(() => {
+    setPersistence(auth, browserLocalPersistence).then(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) setUser(user);
+        else setUser(null);
+        setLoading(false);
       });
-      setSuccess(true);
-      setName("");
-    } catch (error) {
-      console.error("Error saving name:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return () => unsubscribe();
+    });
+  }, []);
 
   return (
     <>
       <div>
-        <h1>Name Form</h1>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Name:{" "}
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save"}
-          </button>
-          {success && <p style={{ color: "green" }}>Saved successfully!</p>}
-        </form>
+        <h1>Job Application Tracker</h1>
+        {loading ? (
+          <p>Loading...</p>
+        ) : user ? (
+          <ApplicationForm user={user} />
+        ) : (
+          <GoogleLoginButton onLogin={setUser} />
+        )}
       </div>
     </>
   );
