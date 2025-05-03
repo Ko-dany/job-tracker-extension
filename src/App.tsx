@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { GoogleLoginButton } from "./components/GoogleLoginButton";
-import { ApplicationForm } from "./components/ApplicationForm";
+import { ApplicationForm } from "./components/jobApplications/ApplicationForm";
 import {
   browserLocalPersistence,
   onAuthStateChanged,

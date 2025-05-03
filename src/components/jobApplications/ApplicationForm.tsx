@@ -1,6 +1,6 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useState } from "react";
-import { db } from "../firebase";
+import { db } from "@/firebase";
 import { User } from "firebase/auth";
 
 export function ApplicationForm({ user }: { user: User | null }) {
