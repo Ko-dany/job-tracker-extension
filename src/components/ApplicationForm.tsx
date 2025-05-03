@@ -1,50 +1,108 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../firebase";
 import { User } from "firebase/auth";
 
 export function ApplicationForm({ user }: { user: User | null }) {
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const initialForm = {
+    companyName: "",
+    position: "",
+    workType: "",
+    status: "",
+    appliedAt: "",
+    notes: "",
+  };
+
+  const [formData, setFormData] = useState(initialForm);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!user) return;
 
-    setLoading(true);
+    const applicationRef = collection(db, "users", user.uid, "applications");
+
     try {
-      await addDoc(collection(db, "names"), {
-        name,
-        timestamp: new Date(),
+      await addDoc(applicationRef, {
+        ...formData,
+        appliedAt: formData.appliedAt ? new Date(formData.appliedAt) : null,
+        createdAt: serverTimestamp(),
       });
-      setSuccess(true);
-      setName("");
+      alert("Application successfully saved!");
+      console.log("Saved data: ", formData);
+      setFormData(initialForm);
     } catch (error) {
-      console.error("Error saving name:", error);
-    } finally {
-      setLoading(false);
+      alert("Error saving application data.");
+      console.error("Error: ", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Welcome, {user!.displayName}</h2>
+    <>
+      <h2>Welcome, {user!.displayName}!</h2>
       <p>Email: {user!.email}</p>
       <img src={user!.photoURL!} alt="Profile" />
-      <br />
-      <label>
-        Name:{" "}
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <button type="submit" disabled={loading}>
-        {loading ? "Saving..." : "Save"}
-      </button>
-      {success && <p style={{ color: "green" }}>Saved successfully!</p>}
-    </form>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Company Name:
+          <input
+            type="text"
+            name="companyName"
+            value={formData.companyName}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Position:
+          <input
+            type="text"
+            name="position"
+            value={formData.position}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Work Type:
+          <input
+            type="text"
+            name="workType"
+            value={formData.workType}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Application Status:
+          <input
+            type="text"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Date Applied:
+          <input
+            type="date"
+            name="appliedAt"
+            value={formData.appliedAt}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Notes:
+          <textarea
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+          />
+        </label>
+        <button type="submit">Save</button>
+      </form>
+    </>
   );
 }
