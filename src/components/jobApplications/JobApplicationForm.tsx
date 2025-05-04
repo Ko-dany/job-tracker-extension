@@ -23,8 +23,10 @@ import { Textarea } from "../ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { User } from "firebase/auth";
 
 type JobApplicationFormProps = {
+  user: User | null;
   onClose: () => void;
 };
 
@@ -49,6 +51,7 @@ const APPLICATION_STATUSES = [
 ];
 
 export default function JobApplicationForm({
+  user,
   onClose,
 }: JobApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,20 +61,35 @@ export default function JobApplicationForm({
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, "applications"), {
-        companyName: data.companyName,
-        position: data.position,
-        workType: data.workType,
-        status: data.status,
-        appliedAt: data.appliedAt || "",
+      const userApplicationsRef = collection(
+        db,
+        "users",
+        user!.uid,
+        "applications",
+      );
+
+      await addDoc(userApplicationsRef, {
+        ...data,
+        appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
         notes: data.notes || "",
         createdAt: serverTimestamp(),
+      });
+
+      form.reset({
+        companyName: "",
+        position: "",
+        workType: "",
+        status: "",
+        appliedAt: new Date().toISOString().split("T")[0],
+        notes: "",
       });
 
       alert("Application successfully saved!");
     } catch (error) {
       alert("Error saving application data.");
       console.error("Error: ", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -192,9 +210,6 @@ export default function JobApplicationForm({
                 <FormField
                   name="notes"
                   render={({ field }) => {
-                    // Ensure null values are converted to empty strings for Textarea
-                    const safeValue = field.value === null ? "" : field.value;
-
                     return (
                       <FormItem>
                         <FormLabel>Memo</FormLabel>
@@ -202,7 +217,6 @@ export default function JobApplicationForm({
                           <Textarea
                             placeholder="Memo any questions or interview preparations"
                             {...field}
-                            value={safeValue}
                           />
                         </FormControl>
                         <FormMessage />

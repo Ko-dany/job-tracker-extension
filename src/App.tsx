@@ -58,7 +58,9 @@ function App() {
         </div>
 
         {/* Form modal */}
-        {showForm && <JobApplicationForm onClose={() => setShowForm(false)} />}
+        {showForm && (
+          <JobApplicationForm onClose={() => setShowForm(false)} user={user} />
+        )}
       </>
     );
   }
