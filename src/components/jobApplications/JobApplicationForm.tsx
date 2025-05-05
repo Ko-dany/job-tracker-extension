@@ -1,4 +1,10 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { useState } from "react";
 import { db } from "@/firebase";
 import { jobApplicationFormSchema } from "@/schema";
@@ -60,19 +66,24 @@ export default function JobApplicationForm({
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
+    if (!user) return alert("User data is null!");
     try {
-      const userApplicationsRef = collection(
-        db,
-        "users",
-        user!.uid,
-        "applications",
-      );
+      // Store user data in "users" collection
+      const userRef = doc(db, "users", user!.uid);
+      await setDoc(userRef, {
+        uid: user!.uid,
+        name: user!.displayName,
+        email: user!.email,
+      });
 
+      // Store user's application data in "applications" sub-collection under "users"
+      const userApplicationsRef = collection(userRef, "applications");
       await addDoc(userApplicationsRef, {
         ...data,
         appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
         notes: data.notes || "",
         createdAt: serverTimestamp(),
+        uid: userApplicationsRef.id,
       });
 
       form.reset({
@@ -140,6 +151,7 @@ export default function JobApplicationForm({
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -167,6 +179,7 @@ export default function JobApplicationForm({
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>

@@ -40,7 +40,6 @@ function App() {
           <div>
             <h2>Welcome, {user!.displayName}!</h2>
             <p>Email: {user!.email}</p>
-            <img src={user!.photoURL!} alt="Profile" />
           </div>
           {/* Applications widget */}
           <div>
