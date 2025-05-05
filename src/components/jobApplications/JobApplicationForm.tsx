@@ -93,147 +93,182 @@ export default function JobApplicationForm({
 
   return (
     <>
-      <div>
-        <div>
-          <div>
-            <h2>New Application</h2>
-            <Button onClick={onClose}>X</Button>
-          </div>
-
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="rounded-lg shadow-xl w-1/2 max-w-md max-h-[90h] overflow-auto bg-black/90 border-white">
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div>
+            <form onSubmit={handleSubmit(onSubmit)} className="p-7">
+              <div className="flex justify-between items-center pb-5 border-b border-white/10">
+                <h2 className="text-xl font-semibold text-white">
+                  New Application
+                </h2>
+                <Button onClick={onClose} className="!p-2 form-button">
+                  <p className="h-5 w-5">X</p>
+                </Button>
+              </div>
+              <div className="space-y-5 mt-5">
                 <FormField
+                  control={form.control}
                   name="companyName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company *</FormLabel>
+                      <FormLabel className="text-white">Company *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter company name" {...field} />
+                        <Input
+                          placeholder="Enter company name"
+                          {...field}
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-300" />
                     </FormItem>
                   )}
                 />
 
                 <FormField
+                  control={form.control}
                   name="position"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Position *</FormLabel>
+                      <FormLabel className="text-white">Position *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter job title" {...field} />
+                        <Input
+                          placeholder="Enter job title"
+                          {...field}
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-300" />
                     </FormItem>
                   )}
                 />
 
-                <div>
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
+                    control={form.control}
                     name="workType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Work Type</FormLabel>
+                        <FormLabel className="text-white">
+                          Work Type *
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-white/10 border-white/20 text-white w-full">
                               <SelectValue placeholder="Select" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="bg-black/90 border-white/20 text-white">
                             {WORK_TYPES.map((type) => (
-                              <SelectItem key={type.value} value={type.value}>
+                              <SelectItem
+                                key={type.value}
+                                value={type.value}
+                                className="hover:bg-white/10 focus:bg-white/20"
+                              >
                                 {type.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage className="text-red-300" />
                       </FormItem>
                     )}
                   />
 
                   <FormField
+                    control={form.control}
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Application Status *</FormLabel>
+                        <FormLabel className="text-white">
+                          Application Status *
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-white/10 border-white/20 text-white w-full">
                               <SelectValue placeholder="Select" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            {APPLICATION_STATUSES.map((status) => (
+                          <SelectContent className="bg-black/90 border-white/20 text-white">
+                            {APPLICATION_STATUSES.map((type) => (
                               <SelectItem
-                                key={status.value}
-                                value={status.value}
+                                key={type.value}
+                                value={type.value}
+                                className="hover:bg-white/10 focus:bg-white/20"
                               >
-                                {status.label}
+                                {type.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage className="text-red-300" />
                       </FormItem>
                     )}
                   />
                 </div>
 
                 <FormField
+                  control={form.control}
                   name="appliedAt"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Application Date *</FormLabel>
+                      <FormLabel className="text-white">
+                        Application Date *
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="date"
                           {...field}
                           value={new Date().toISOString().split("T")[0]}
+                          className="bg-white/10 border-white/20 text-white"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-300" />
                     </FormItem>
                   )}
                 />
 
                 <FormField
+                  control={form.control}
                   name="notes"
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Memo</FormLabel>
+                        <FormLabel className="text-white">Memo</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Memo any questions or interview preparations"
                             {...field}
+                            className="min-h-[100px] bg-white/10 border-white/20 text-white placeholder:text-white/50"
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-red-300" />
                       </FormItem>
                     );
                   }}
                 />
 
-                <div>
+                <div className="flex justify-end space-x-3 pt-3 border-t border-white/10">
                   <Button
                     type="button"
                     onClick={onClose}
                     disabled={isSubmitting}
+                    className="form-button"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="form-button"
+                  >
                     {isSubmitting ? "Saving..." : "Save"}
                   </Button>
                 </div>
