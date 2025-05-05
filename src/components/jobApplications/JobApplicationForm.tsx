@@ -94,15 +94,28 @@ export default function JobApplicationForm({
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div className="rounded-lg shadow-xl w-1/2 max-w-md max-h-[90h] overflow-auto bg-black/90 border-white">
+        <div className="form-modal rounded-lg shadow-xl w-1/2 max-w-md max-h-[90h] overflow-auto">
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="p-7">
               <div className="flex justify-between items-center pb-5 border-b border-white/10">
                 <h2 className="text-xl font-semibold text-white">
                   New Application
                 </h2>
-                <Button onClick={onClose} className="!p-2 form-button">
-                  <p className="h-5 w-5">X</p>
+                <Button onClick={onClose} className="!p-2 form-button ">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
                 </Button>
               </div>
               <div className="space-y-5 mt-5">
