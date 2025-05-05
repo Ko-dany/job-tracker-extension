@@ -9,6 +9,8 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { Route, Switch } from "wouter";
+import Clock from "./components/home/clock";
+import Greeting from "./components/home/greeting";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -34,17 +36,17 @@ function App() {
         <div></div>
 
         {/* Main content */}
-        <div>
-          <h1>Job Application Tracker</h1>
+        <div className="min-h-screen flex flex-col justify-center items-center">
+          {/* Clock widget */}
+          <Clock />
           {/* Welcome user */}
-          <div>
-            <h2>Welcome, {user!.displayName}!</h2>
-            <p>Email: {user!.email}</p>
-          </div>
+          <Greeting userName={user!.displayName} />
           {/* Applications widget */}
           <div>
             <div>
-              <button onClick={() => setShowForm(true)}>New Application</button>
+              <button onClick={() => setShowForm(true)} className="form-button">
+                New Application
+              </button>
 
               {/* Applications list */}
               <main>
@@ -56,7 +58,7 @@ function App() {
           </div>
         </div>
 
-        {/* Form modal */}
+        {/* Job Application Form modal */}
         {showForm && (
           <JobApplicationForm onClose={() => setShowForm(false)} user={user} />
         )}

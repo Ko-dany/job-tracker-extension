@@ -6,8 +6,8 @@ export const WORK_TYPES = [
 ];
 
 export const APPLICATION_STATUSES = [
-  { value: "Submitted", label: "Submitted", color: "blue" },
+  { value: "Applied", label: "Applied", color: "blue" },
   { value: "Interview", label: "Interview", color: "orange" },
-  { value: "Offered", label: "Offered", color: "emerald" },
+  { value: "Accepted", label: "Accepted", color: "emerald" },
   { value: "Rejected", label: "Rejected", color: "red" },
 ];
