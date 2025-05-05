@@ -1,3 +1,6 @@
+/* Firebase imports */
+import { db } from "@/firebase";
+import { User } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -5,10 +8,9 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { useState } from "react";
-import { db } from "@/firebase";
-import { jobApplicationFormSchema } from "@/schema";
-import { Button } from "../ui/button";
+
+/* UI imports */
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -26,10 +28,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
+
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User } from "firebase/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { jobApplicationFormSchema } from "@/schema";
+import { APPLICATION_STATUSES, WORK_TYPES } from "@/constants";
 
 type JobApplicationFormProps = {
   user: User | null;
@@ -37,24 +42,6 @@ type JobApplicationFormProps = {
 };
 
 type FormData = z.infer<typeof jobApplicationFormSchema>;
-
-const WORK_TYPES = [
-  { value: "Full-time", label: "Full-time" },
-  { value: "Contract", label: "Contract" },
-  { value: "Internship", label: "Internship" },
-  { value: "Freelance", label: "Freelance" },
-  { value: "Co-op", label: "Co-op" },
-];
-
-const APPLICATION_STATUSES = [
-  { value: "Submitted", label: "Submitted", color: "blue" },
-  { value: "Reviewing", label: "Reviewing", color: "amber" },
-  { value: "Accepted", label: "Accepted", color: "green" },
-  { value: "Interviewing", label: "Interviewing", color: "green" },
-  { value: "Interviewed", label: "Interviewed", color: "purple" },
-  { value: "Offered", label: "Offered", color: "emerald" },
-  { value: "Rejected", label: "Rejected", color: "red" },
-];
 
 export default function JobApplicationForm({
   user,
