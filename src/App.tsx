@@ -11,6 +11,7 @@ import { auth } from "./firebase";
 import { Route, Switch } from "wouter";
 import Clock from "./components/home/clock";
 import Greeting from "./components/home/greeting";
+import RandomBackground from "./components/home/randomBackground";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -33,7 +34,9 @@ function App() {
     return (
       <>
         {/* Background image */}
-        <div></div>
+        <div>
+          <RandomBackground />
+        </div>
 
         {/* Main content */}
         <div className="min-h-screen flex flex-col justify-center items-center">
