@@ -38,6 +38,25 @@ h1 {
   line-height: 1.1;
 }
 
+/* Loading */
+@keyframes loading-bounce-animation {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-15px);
+  }
+  15% {
+    transform: translateY(0);
+  }
+}
+
+.loading-bounce {
+  animation-name: loading-bounce-animation;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
 /* Main Clock */
 .main-clock {
   font-size: 8rem;

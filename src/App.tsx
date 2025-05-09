@@ -12,6 +12,7 @@ import { Route, Switch } from "wouter";
 import Clock from "./components/home/clock";
 import Greeting from "./components/home/greeting";
 import RandomBackground from "./components/home/randomBackground";
+import Loading from "./components/home/loading";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -73,7 +74,7 @@ function App() {
     <>
       <div>
         {loading ? (
-          <p>Loading...</p>
+          <Loading />
         ) : !user ? (
           <GoogleLoginButton onLogin={setUser} />
         ) : (
