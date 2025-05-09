@@ -18,5 +18,5 @@ export default function Clock() {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  return <div className="main-clock w-md h-40">{getCurrentTime()}</div>;
+  return <div className="main-clock h-40">{getCurrentTime()}</div>;
 }
