@@ -35,5 +35,9 @@ export function GoogleLoginButton({ onLogin }: GoogleLoginButtonType) {
       })
       .catch((error) => console.log("Error during Google login: ", error));
   };
-  return <button onClick={handleGoogleLogin}>Login in Google</button>;
+  return (
+    <button onClick={handleGoogleLogin} className="form-button mt-10">
+      Login in Google
+    </button>
+  );
 }
