@@ -7,4 +7,5 @@ export const jobApplicationFormSchema = z.object({
   status: z.string().min(1, "Please select an application status"),
   appliedAt: z.string().optional(),
   notes: z.string().optional(),
+  uid: z.string().optional(),
 });
