@@ -14,7 +14,7 @@ import { Route, Switch } from "wouter";
 import RandomBg from "./components/home/randomBg";
 import Loading from "./components/home/loading";
 import { createApi } from "unsplash-js";
-import JobApplicationCard from "./components/jobApplications/JobApplicationCard";
+import JobApplicationList from "./components/jobApplications/JobApplicationList";
 
 const unsplash = createApi({
   accessKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
@@ -123,7 +123,7 @@ function App() {
 
                   {/* Applications list */}
                   <main>
-                    <JobApplicationCard user={user} />
+                    <JobApplicationList user={user} />
                   </main>
                 </div>
               </div>
