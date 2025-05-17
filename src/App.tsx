@@ -9,11 +9,12 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { Route, Switch } from "wouter";
-import Clock from "./components/home/clock";
-import Greeting from "./components/home/greeting";
+// import Clock from "./components/home/clock";
+// import Greeting from "./components/home/greeting";
 import RandomBg from "./components/home/randomBg";
 import Loading from "./components/home/loading";
 import { createApi } from "unsplash-js";
+import JobApplicationList from "./components/jobApplications/JobApplicationList";
 
 const unsplash = createApi({
   accessKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
@@ -101,11 +102,11 @@ function App() {
           }}
         >
           {/* Clock widget */}
-          <Clock />
+          {/* <Clock /> */}
           {user ? (
             <>
               {/* Welcome user */}
-              <Greeting userName={user!.displayName} />
+              {/* <Greeting userName={user!.displayName} /> */}
               {/* Applications widget */}
               <div>
                 <div>
@@ -121,7 +122,9 @@ function App() {
                   )}
 
                   {/* Applications list */}
-                  <main></main>
+                  <main>
+                    <JobApplicationList user={user} />
+                  </main>
                 </div>
               </div>
             </>

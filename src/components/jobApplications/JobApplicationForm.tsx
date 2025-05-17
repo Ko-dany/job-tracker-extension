@@ -65,13 +65,20 @@ export default function JobApplicationForm({
 
       // Store user's application data in "applications" sub-collection under "users"
       const userApplicationsRef = collection(userRef, "applications");
-      await addDoc(userApplicationsRef, {
+      const docRef = await addDoc(userApplicationsRef, {
         ...data,
         appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
         notes: data.notes || "",
         createdAt: serverTimestamp(),
-        uid: userApplicationsRef.id,
       });
+
+      await setDoc(
+        docRef,
+        {
+          uid: docRef.id,
+        },
+        { merge: true },
+      );
 
       form.reset({
         companyName: "",
