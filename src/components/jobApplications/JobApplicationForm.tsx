@@ -7,6 +7,7 @@ import {
   doc,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 /* UI imports */
@@ -49,36 +50,66 @@ export default function JobApplicationForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!initialData;
 
-  const form = useForm({ resolver: zodResolver(jobApplicationFormSchema) });
+  const form = useForm({
+    resolver: zodResolver(jobApplicationFormSchema),
+    defaultValues: initialData
+      ? {
+          ...initialData,
+        }
+      : {
+          companyName: "",
+          position: "",
+          workType: WORK_TYPES[0].value,
+          status: APPLICATION_STATUSES[0].value,
+          appliedAt: new Date().toISOString().split("T")[0],
+          notes: "",
+        },
+  });
+
   const { handleSubmit } = form;
   const onSubmit = async (data: JobApplication) => {
     setIsSubmitting(true);
     if (!user) return alert("User data is null!");
     try {
-      // Store user data in "users" collection
-      const userRef = doc(db, "users", user!.uid);
-      await setDoc(userRef, {
-        uid: user!.uid,
-        name: user!.displayName,
-        email: user!.email,
-      });
+      if (isEditing && initialData && initialData.uid) {
+        // Update existing application
+        const userApplicationsRef = doc(
+          db,
+          "users",
+          user!.uid,
+          "applications",
+          initialData.uid,
+        );
+        await updateDoc(userApplicationsRef, {
+          ...data,
+        });
+      } else {
+        // Create a new application
+        // 1. Store user data in "users" collection
+        const userRef = doc(db, "users", user!.uid);
+        await setDoc(userRef, {
+          uid: user!.uid,
+          name: user!.displayName,
+          email: user!.email,
+        });
 
-      // Store user's application data in "applications" sub-collection under "users"
-      const userApplicationsRef = collection(userRef, "applications");
-      const docRef = await addDoc(userApplicationsRef, {
-        ...data,
-        appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
-        notes: data.notes || "",
-        createdAt: serverTimestamp(),
-      });
+        // 2. Store user's application data in "applications" sub-collection under "users"
+        const userApplicationsRef = collection(userRef, "applications");
+        const docRef = await addDoc(userApplicationsRef, {
+          ...data,
+          appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
+          notes: data.notes || "",
+          createdAt: serverTimestamp(),
+        });
 
-      await setDoc(
-        docRef,
-        {
-          uid: docRef.id,
-        },
-        { merge: true },
-      );
+        await setDoc(
+          docRef,
+          {
+            uid: docRef.id,
+          },
+          { merge: true },
+        );
+      }
 
       form.reset({
         companyName: "",
@@ -246,7 +277,6 @@ export default function JobApplicationForm({
                         <Input
                           type="date"
                           {...field}
-                          value={new Date().toISOString().split("T")[0]}
                           className="bg-white/10 border-white/20 text-white"
                         />
                       </FormControl>
