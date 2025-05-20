@@ -1,30 +1,31 @@
-import { jobApplicationFormSchema } from "@/schema";
+import { JobApplication } from "@/schema";
 import { Briefcase, Calendar, Pencil } from "lucide-react";
-import { z } from "zod";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { APPLICATION_STATUSES } from "@/constants";
 
-type JobApplication = z.infer<typeof jobApplicationFormSchema>;
-
 type JobApplicationCardProps = {
   application: JobApplication;
+  setShowForm: (show: boolean) => void;
+  setInitialData: (data: JobApplication | null) => void;
 };
 
 export default function JobApplicationCard({
   application,
+  setShowForm,
+  setInitialData,
 }: JobApplicationCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="job-card min-w-[385px]">
-      <div
-        className="flex flex-col sm:flex-row sm:items-ccenter justify-between cursor-pointer"
-        onClick={() => {
-          setIsExpanded(!isExpanded);
-        }}
-      >
-        <div className="flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-ccenter justify-between cursor-pointer">
+        <div
+          onClick={() => {
+            setIsExpanded(!isExpanded);
+          }}
+          className="flex-1 min-w-0"
+        >
           {/* Company & Position */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <h3 className="text-lg font-medium text-white truncate">
@@ -49,7 +50,13 @@ export default function JobApplicationCard({
         {/* Status */}
         <div className="flex items-center space-x-3 mt-3 sm:mt-0">
           <span>{application.status}</span>
-          <Button className="form-button !p-2">
+          <Button
+            onClick={() => {
+              setShowForm(true);
+              setInitialData(application);
+            }}
+            className="form-button !p-2"
+          >
             <Pencil className="h-4 w-4 text-white/80" />
           </Button>
         </div>

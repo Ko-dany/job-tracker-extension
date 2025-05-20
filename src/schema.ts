@@ -9,3 +9,5 @@ export const jobApplicationFormSchema = z.object({
   notes: z.string().trim().optional(),
   uid: z.string().optional(),
 });
+
+export type JobApplication = z.infer<typeof jobApplicationFormSchema>;

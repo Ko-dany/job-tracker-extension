@@ -31,27 +31,27 @@ import { Textarea } from "../ui/textarea";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { jobApplicationFormSchema } from "@/schema";
+import { JobApplication, jobApplicationFormSchema } from "@/schema";
 import { APPLICATION_STATUSES, WORK_TYPES } from "@/constants";
 
 type JobApplicationFormProps = {
   user: User | null;
   onClose: () => void;
+  initialData?: JobApplication;
 };
-
-type FormData = z.infer<typeof jobApplicationFormSchema>;
 
 export default function JobApplicationForm({
   user,
   onClose,
+  initialData,
 }: JobApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditing = !!initialData;
+
   const form = useForm({ resolver: zodResolver(jobApplicationFormSchema) });
   const { handleSubmit } = form;
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: JobApplication) => {
     setIsSubmitting(true);
     if (!user) return alert("User data is null!");
     try {
@@ -106,7 +106,7 @@ export default function JobApplicationForm({
             <form onSubmit={handleSubmit(onSubmit)} className="p-7">
               <div className="flex justify-between items-center pb-5 border-b border-white/10">
                 <h2 className="text-xl font-semibold text-white">
-                  New Application
+                  {isEditing ? "Edit Application" : "New Application"}
                 </h2>
                 <Button onClick={onClose} className="!p-2 form-button ">
                   <svg
