@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { GoogleLoginButton } from "./components/GoogleLoginButton";
 import JobApplicationForm from "./components/jobApplications/JobApplicationForm";
 import {
   browserLocalPersistence,
@@ -15,6 +14,7 @@ import RandomBg from "./components/home/randomBg";
 import Loading from "./components/home/loading";
 import { createApi } from "unsplash-js";
 import JobApplicationList from "./components/jobApplications/JobApplicationList";
+import { GoogleLoginButton } from "./components/home/GoogleLoginButton";
 
 const unsplash = createApi({
   accessKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
