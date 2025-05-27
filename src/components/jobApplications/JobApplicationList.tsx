@@ -5,6 +5,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import JobApplicationCard from "./JobApplicationCard";
 import JobApplicationForm from "./JobApplicationForm";
+import { Toaster } from "sonner";
 
 type JobApplicationListProps = {
   user: User;
@@ -12,8 +13,10 @@ type JobApplicationListProps = {
 
 export default function JobApplicationList({ user }: JobApplicationListProps) {
   const [applications, setApplications] = useState<JobApplication[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [initialData, setInitialData] = useState<JobApplication | null>(null);
+  const [editData, setEditData] = useState<JobApplication | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,26 +29,46 @@ export default function JobApplicationList({ user }: JobApplicationListProps) {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, lastUpdated]);
 
   return (
     <div>
+      <button
+        onClick={() => {
+          setShowNewForm(true);
+          setEditData(null);
+        }}
+        className="form-button"
+      >
+        New Application
+      </button>
       {applications.map((application) => (
         <JobApplicationCard
           key={application.uid}
           application={application}
-          setShowForm={setShowForm}
-          setInitialData={setInitialData}
+          setShowEditForm={(show: boolean) => setShowEditForm(show)}
+          setInitialData={(application: JobApplication) =>
+            setEditData(application)
+          }
         />
       ))}
       {/* Job Application Form modal */}
-      {showForm && (
+      {showNewForm && (
         <JobApplicationForm
-          onClose={() => setShowForm(false)}
+          onClose={() => setShowNewForm(false)}
           user={user}
-          initialData={initialData!}
+          onUpdateForm={(date: Date) => setLastUpdated(date)}
         />
       )}
+      {showEditForm && (
+        <JobApplicationForm
+          onClose={() => setShowEditForm(false)}
+          user={user}
+          initialData={editData!}
+          onUpdateForm={(date: Date) => setLastUpdated(date)}
+        />
+      )}
+      <Toaster />
     </div>
   );
 }

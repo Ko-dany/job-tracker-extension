@@ -6,13 +6,13 @@ import { APPLICATION_STATUSES } from "@/constants";
 
 type JobApplicationCardProps = {
   application: JobApplication;
-  setShowForm: (show: boolean) => void;
-  setInitialData: (data: JobApplication | null) => void;
+  setShowEditForm: (show: boolean) => void;
+  setInitialData: (data: JobApplication) => void;
 };
 
 export default function JobApplicationCard({
   application,
-  setShowForm,
+  setShowEditForm,
   setInitialData,
 }: JobApplicationCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -52,7 +52,8 @@ export default function JobApplicationCard({
           <span>{application.status}</span>
           <Button
             onClick={() => {
-              setShowForm(true);
+              setShowEditForm(true);
+              console.log("setShowEditForm is turned to True");
               setInitialData(application);
             }}
             className="form-button !p-2"

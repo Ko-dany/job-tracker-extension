@@ -41,12 +41,14 @@ type JobApplicationFormProps = {
   user: User | null;
   onClose: () => void;
   initialData?: JobApplication;
+  onUpdateForm: (date: Date) => void;
 };
 
 export default function JobApplicationForm({
   user,
   onClose,
   initialData,
+  onUpdateForm,
 }: JobApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!initialData;
@@ -120,6 +122,8 @@ export default function JobApplicationForm({
           duration: 5000,
         });
       }
+      const currentTime = new Date();
+      onUpdateForm(currentTime);
       onClose();
     } catch (error) {
       toast("Something Went Wrong", {
