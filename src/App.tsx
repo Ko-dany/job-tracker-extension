@@ -15,6 +15,7 @@ import Loading from "./components/home/loading";
 import { createApi } from "unsplash-js";
 import JobApplicationList from "./components/jobApplications/JobApplicationList";
 import { GoogleLoginButton } from "./components/home/GoogleLoginButton";
+import { Toaster } from "@/components/ui/sonner";
 
 const unsplash = createApi({
   accessKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
@@ -143,6 +144,7 @@ function App() {
         {showForm && (
           <JobApplicationForm onClose={() => setShowForm(false)} user={user} />
         )}
+        <Toaster />
       </>
     );
   }

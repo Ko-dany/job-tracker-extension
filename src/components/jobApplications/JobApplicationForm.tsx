@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -71,8 +72,8 @@ export default function JobApplicationForm({
     setIsSubmitting(true);
     if (!user) return alert("User data is null!");
     try {
+      /* Update existing application */
       if (isEditing && initialData && initialData.uid) {
-        // Update existing application
         const userApplicationsRef = doc(
           db,
           "users",
@@ -83,8 +84,12 @@ export default function JobApplicationForm({
         await updateDoc(userApplicationsRef, {
           ...data,
         });
-      } else {
-        // Create a new application
+
+        toast("Updated Successfully", {
+          description: "Your application details have been updated.",
+          duration: 5000,
+        });
+      } /* Create a new application */ else {
         // 1. Store user data in "users" collection
         const userRef = doc(db, "users", user!.uid);
         await setDoc(userRef, {
@@ -109,20 +114,19 @@ export default function JobApplicationForm({
           },
           { merge: true },
         );
+
+        toast("Saved Successfully", {
+          description: "Your new application has been saved.",
+          duration: 5000,
+        });
       }
-
-      form.reset({
-        companyName: "",
-        position: "",
-        workType: "",
-        status: "",
-        appliedAt: new Date().toISOString().split("T")[0],
-        notes: "",
-      });
-
-      alert("Application successfully saved!");
+      onClose();
     } catch (error) {
-      alert("Error saving application data.");
+      toast("Something Went Wrong", {
+        description:
+          "There was a problem saving your application. Please try again.",
+        duration: 5000,
+      });
       console.error("Error: ", error);
     } finally {
       setIsSubmitting(false);
