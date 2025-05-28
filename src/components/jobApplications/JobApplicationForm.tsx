@@ -81,7 +81,7 @@ export default function JobApplicationForm({
           "users",
           user!.uid,
           "applications",
-          initialData.uid,
+          initialData.uid!,
         );
         await updateDoc(userApplicationsRef, {
           ...data,

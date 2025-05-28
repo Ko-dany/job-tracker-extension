@@ -44,12 +44,14 @@ export default function JobApplicationList({ user }: JobApplicationListProps) {
       </button>
       {applications.map((application) => (
         <JobApplicationCard
+          user={user}
           key={application.uid}
           application={application}
           setShowEditForm={(show: boolean) => setShowEditForm(show)}
           setInitialData={(application: JobApplication) =>
             setEditData(application)
           }
+          onUpdateForm={(date: Date) => setLastUpdated(date)}
         />
       ))}
       {/* Job Application Form modal */}
