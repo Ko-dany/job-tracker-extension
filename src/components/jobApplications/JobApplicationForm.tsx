@@ -7,6 +7,7 @@ import {
   doc,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 /* UI imports */
@@ -28,70 +29,108 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { jobApplicationFormSchema } from "@/schema";
+import { JobApplication, jobApplicationFormSchema } from "@/schema";
 import { APPLICATION_STATUSES, WORK_TYPES } from "@/constants";
 
 type JobApplicationFormProps = {
   user: User | null;
   onClose: () => void;
+  initialData?: JobApplication;
+  onUpdateForm: (date: Date) => void;
 };
-
-type FormData = z.infer<typeof jobApplicationFormSchema>;
 
 export default function JobApplicationForm({
   user,
   onClose,
+  initialData,
+  onUpdateForm,
 }: JobApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const form = useForm({ resolver: zodResolver(jobApplicationFormSchema) });
-  const { handleSubmit } = form;
+  const isEditing = !!initialData;
 
-  const onSubmit = async (data: FormData) => {
+  const form = useForm({
+    resolver: zodResolver(jobApplicationFormSchema),
+    defaultValues: initialData
+      ? {
+          ...initialData,
+        }
+      : {
+          companyName: "",
+          position: "",
+          workType: WORK_TYPES[0].value,
+          status: APPLICATION_STATUSES[0].value,
+          appliedAt: new Date().toISOString().split("T")[0],
+          notes: "",
+        },
+  });
+
+  const { handleSubmit } = form;
+  const onSubmit = async (data: JobApplication) => {
     setIsSubmitting(true);
     if (!user) return alert("User data is null!");
     try {
-      // Store user data in "users" collection
-      const userRef = doc(db, "users", user!.uid);
-      await setDoc(userRef, {
-        uid: user!.uid,
-        name: user!.displayName,
-        email: user!.email,
-      });
+      /* Update existing application */
+      if (isEditing && initialData && initialData.uid) {
+        const userApplicationsRef = doc(
+          db,
+          "users",
+          user!.uid,
+          "applications",
+          initialData.uid!,
+        );
+        await updateDoc(userApplicationsRef, {
+          ...data,
+        });
 
-      // Store user's application data in "applications" sub-collection under "users"
-      const userApplicationsRef = collection(userRef, "applications");
-      const docRef = await addDoc(userApplicationsRef, {
-        ...data,
-        appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
-        notes: data.notes || "",
-        createdAt: serverTimestamp(),
-      });
+        toast("Updated Successfully", {
+          description: "Your application details have been updated.",
+          duration: 5000,
+        });
+      } /* Create a new application */ else {
+        // 1. Store user data in "users" collection
+        const userRef = doc(db, "users", user!.uid);
+        await setDoc(userRef, {
+          uid: user!.uid,
+          name: user!.displayName,
+          email: user!.email,
+        });
 
-      await setDoc(
-        docRef,
-        {
-          uid: docRef.id,
-        },
-        { merge: true },
-      );
+        // 2. Store user's application data in "applications" sub-collection under "users"
+        const userApplicationsRef = collection(userRef, "applications");
+        const docRef = await addDoc(userApplicationsRef, {
+          ...data,
+          appliedAt: data.appliedAt || new Date().toISOString().split("T")[0],
+          notes: data.notes || "",
+          createdAt: serverTimestamp(),
+        });
 
-      form.reset({
-        companyName: "",
-        position: "",
-        workType: "",
-        status: "",
-        appliedAt: new Date().toISOString().split("T")[0],
-        notes: "",
-      });
+        await setDoc(
+          docRef,
+          {
+            uid: docRef.id,
+          },
+          { merge: true },
+        );
 
-      alert("Application successfully saved!");
+        toast("Saved Successfully", {
+          description: "Your new application has been saved.",
+          duration: 5000,
+        });
+      }
+      const currentTime = new Date();
+      onUpdateForm(currentTime);
+      onClose();
     } catch (error) {
-      alert("Error saving application data.");
+      toast("Something Went Wrong", {
+        description:
+          "There was a problem saving your application. Please try again.",
+        duration: 5000,
+      });
       console.error("Error: ", error);
     } finally {
       setIsSubmitting(false);
@@ -106,7 +145,7 @@ export default function JobApplicationForm({
             <form onSubmit={handleSubmit(onSubmit)} className="p-7">
               <div className="flex justify-between items-center pb-5 border-b border-white/10">
                 <h2 className="text-xl font-semibold text-white">
-                  New Application
+                  {isEditing ? "Edit Application" : "New Application"}
                 </h2>
                 <Button onClick={onClose} className="!p-2 form-button ">
                   <svg
@@ -246,7 +285,6 @@ export default function JobApplicationForm({
                         <Input
                           type="date"
                           {...field}
-                          value={new Date().toISOString().split("T")[0]}
                           className="bg-white/10 border-white/20 text-white"
                         />
                       </FormControl>

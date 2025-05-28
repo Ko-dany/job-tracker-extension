@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { GoogleLoginButton } from "./components/GoogleLoginButton";
-import JobApplicationForm from "./components/jobApplications/JobApplicationForm";
 import {
   browserLocalPersistence,
   onAuthStateChanged,
@@ -9,12 +7,13 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { Route, Switch } from "wouter";
-// import Clock from "./components/home/clock";
-// import Greeting from "./components/home/greeting";
+import Clock from "./components/home/clock";
+import Greeting from "./components/home/greeting";
 import RandomBg from "./components/home/randomBg";
 import Loading from "./components/home/loading";
 import { createApi } from "unsplash-js";
 import JobApplicationList from "./components/jobApplications/JobApplicationList";
+import { GoogleLoginButton } from "./components/home/GoogleLoginButton";
 
 const unsplash = createApi({
   accessKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
@@ -81,8 +80,6 @@ function App() {
   }, [bgImgUrl]);
 
   function Router() {
-    const [showForm, setShowForm] = useState(false);
-
     return (
       <>
         <Switch>
@@ -102,29 +99,22 @@ function App() {
           }}
         >
           {/* Clock widget */}
-          {/* <Clock /> */}
+          <Clock />
           {user ? (
             <>
               {/* Welcome user */}
-              {/* <Greeting userName={user!.displayName} /> */}
+              <Greeting userName={user!.displayName} />
               {/* Applications widget */}
               <div>
                 <div>
                   {user ? (
-                    <button
-                      onClick={() => setShowForm(true)}
-                      className="form-button"
-                    >
-                      New Application
-                    </button>
+                    // Applications list
+                    <main>
+                      <JobApplicationList user={user} />
+                    </main>
                   ) : (
                     <GoogleLoginButton onLogin={setUser} />
                   )}
-
-                  {/* Applications list */}
-                  <main>
-                    <JobApplicationList user={user} />
-                  </main>
                 </div>
               </div>
             </>
@@ -138,11 +128,6 @@ function App() {
             </>
           )}
         </div>
-
-        {/* Job Application Form modal */}
-        {showForm && (
-          <JobApplicationForm onClose={() => setShowForm(false)} user={user} />
-        )}
       </>
     );
   }

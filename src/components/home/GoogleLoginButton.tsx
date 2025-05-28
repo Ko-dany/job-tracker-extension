@@ -1,5 +1,5 @@
 import { User, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "@/firebase";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 
 interface GoogleLoginButtonType {

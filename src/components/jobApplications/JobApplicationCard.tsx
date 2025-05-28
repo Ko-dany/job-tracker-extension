@@ -1,30 +1,71 @@
-import { jobApplicationFormSchema } from "@/schema";
+import { JobApplication } from "@/schema";
 import { Briefcase, Calendar, Pencil } from "lucide-react";
-import { z } from "zod";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { APPLICATION_STATUSES } from "@/constants";
-
-type JobApplication = z.infer<typeof jobApplicationFormSchema>;
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { User } from "firebase/auth";
+import { toast } from "sonner";
 
 type JobApplicationCardProps = {
+  user: User;
   application: JobApplication;
+  setShowEditForm: (show: boolean) => void;
+  setInitialData: (data: JobApplication) => void;
+  onUpdateForm: (date: Date) => void;
 };
 
 export default function JobApplicationCard({
+  user,
   application,
+  setShowEditForm,
+  setInitialData,
+  onUpdateForm,
 }: JobApplicationCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const handleChangeStatus = async (newStatus: string) => {
+    if (!user) return alert("User data is null!");
+    try {
+      const userApplicationsRef = doc(
+        db,
+        "users",
+        user!.uid,
+        "applications",
+        application.uid!,
+      );
+
+      await updateDoc(userApplicationsRef, {
+        status: newStatus,
+      });
+
+      toast("Updated Successfully", {
+        description: "Your application status has been updated.",
+        duration: 5000,
+      });
+
+      const currentTime = new Date();
+      onUpdateForm(currentTime);
+    } catch (error) {
+      toast("Something Went Wrong", {
+        description:
+          "There was a problem saving your application. Please try again.",
+        duration: 5000,
+      });
+      console.error("Error: ", error);
+    }
+  };
+
   return (
     <div className="job-card min-w-[385px]">
-      <div
-        className="flex flex-col sm:flex-row sm:items-ccenter justify-between cursor-pointer"
-        onClick={() => {
-          setIsExpanded(!isExpanded);
-        }}
-      >
-        <div className="flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-ccenter justify-between cursor-pointer">
+        <div
+          onClick={() => {
+            setIsExpanded(!isExpanded);
+          }}
+          className="flex-1 min-w-0"
+        >
           {/* Company & Position */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <h3 className="text-lg font-medium text-white truncate">
@@ -49,7 +90,14 @@ export default function JobApplicationCard({
         {/* Status */}
         <div className="flex items-center space-x-3 mt-3 sm:mt-0">
           <span>{application.status}</span>
-          <Button className="form-button !p-2">
+          <Button
+            onClick={() => {
+              setShowEditForm(true);
+              console.log("setShowEditForm is turned to True");
+              setInitialData(application);
+            }}
+            className="form-button !p-2"
+          >
             <Pencil className="h-4 w-4 text-white/80" />
           </Button>
         </div>
@@ -76,6 +124,9 @@ export default function JobApplicationCard({
                 <Button
                   key={status.value}
                   className={`text-xs ${status.value === application.status ? `bg-${status.color}-500/30 hover:bg-${status.color}-500/50 text-white border-1` : "form-button"}`}
+                  onClick={() => {
+                    handleChangeStatus(status.value);
+                  }}
                 >
                   {status.value}
                 </Button>
